@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GithubRepoViewer</string>
+
+    <string-array name="sort">
+        <item>Name</item>
+        <item>Updated</item>
+        <item>Created</item>
+    </string-array>
+
+</resources>

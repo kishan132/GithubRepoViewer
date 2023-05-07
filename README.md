@@ -12,3 +12,7 @@ curl -L \
   https://api.github.com/search/repositories?q=Q
   
   
+  User can also Sort Repo list according to no of Stars, name, updated date, score and watcher_count
+  
+  
+  

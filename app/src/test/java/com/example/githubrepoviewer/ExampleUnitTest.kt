@@ -16,7 +16,7 @@ class ExampleUnitTest {
     fun testResponse() {
 
         runBlocking {
-            val response = GithubClient.api.getPublicRepoList("kishan")
+            val response = GithubClient.api.getPublicRepoList("kishan",1,"stars")
 
             assertNotNull(response.body())
 

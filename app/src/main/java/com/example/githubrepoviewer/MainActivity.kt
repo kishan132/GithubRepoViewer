@@ -1,24 +1,27 @@
 package com.example.githubrepoviewer
 
-import androidx.appcompat.app.AppCompatActivity
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.githubrepoviewer.databinding.ActivityMainBinding
+import com.example.githubrepoviewer.extensions.loadImage
 import com.example.githubrepoviewer.model.entities.Item
+import com.example.githubrepoviewer.ui.IonItemClickListener
 import com.example.githubrepoviewer.ui.RepoAdapter
 import com.example.githubrepoviewer.ui.RepoViewModel
 
-class MainActivity : AppCompatActivity() {
 
-    private val TAG = "githubtest"
+class MainActivity : AppCompatActivity(), IonItemClickListener {
+
     private lateinit var binding:ActivityMainBinding
     private var filterType : String = "name"
     private lateinit var repoViewModel: RepoViewModel
@@ -34,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         repoViewModel = ViewModelProvider(this)[RepoViewModel::class.java]
-        repoAdapter = RepoAdapter()
+        repoAdapter = RepoAdapter(this)
 
         binding.repoRV.apply{
             layoutManager =LinearLayoutManager(context)
@@ -63,7 +66,6 @@ class MainActivity : AppCompatActivity() {
 
         repoViewModel.repoData.observe(this, Observer {
 
-            Log.d(TAG, "observe: $it")
             binding.progressBar.visibility = View.GONE
 
             if(totalItemList==null && it!=null){
@@ -122,6 +124,42 @@ class MainActivity : AppCompatActivity() {
                 repoViewModel.getUserRepoList(query!!, page,filterType)
             }
         }
+    }
+
+    override fun onItemClick(item: Item) {
+        onButtonShowPopupWindowClick(item)
+        Toast.makeText(this,"${item.name}",Toast.LENGTH_SHORT).show()
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun onButtonShowPopupWindowClick(item: Item) {
+
+        // inflate the layout of the popup window
+        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popupView: View = inflater.inflate(R.layout.activity_repo_item, null)
+
+        // create the popup window
+        val width = LinearLayout.LayoutParams.WRAP_CONTENT
+        val height = LinearLayout.LayoutParams.WRAP_CONTENT
+        val focusable = true // lets taps outside the popup also dismiss it
+        val popupWindow = PopupWindow(popupView, width, height, focusable)
+
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window tolken
+        popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
+
+        val imageView = popupView.findViewById<ImageView>(R.id.avatar)
+        val repoName = popupView.findViewById<TextView>(R.id.repoName)
+        val stars = popupView.findViewById<TextView>(R.id.star)
+        val language = popupView.findViewById<TextView>(R.id.language)
+        val desc = popupView.findViewById<TextView>(R.id.description)
+
+        item.owner?.avatarUrl?.let { imageView.loadImage(it,false) }
+        repoName.text = item.name
+        stars.text = "Star = ${item.stargazersCount}"
+        language.text = "Language: ${item.language}"
+        desc.text = item.description
+
     }
 
 }

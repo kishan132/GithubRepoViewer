@@ -11,7 +11,7 @@ import com.example.githubrepoviewer.databinding.ActivityRepoItemBinding
 import com.example.githubrepoviewer.extensions.loadImage
 import com.example.githubrepoviewer.model.entities.Item
 
-class RepoAdapter()  : ListAdapter<Item, RepoAdapter.RepoViewHolder>(
+class RepoAdapter(private val listener :IonItemClickListener)  : ListAdapter<Item, RepoAdapter.RepoViewHolder>(
     object : DiffUtil.ItemCallback<Item>(){
         override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
             return oldItem == newItem
@@ -43,6 +43,11 @@ class RepoAdapter()  : ListAdapter<Item, RepoAdapter.RepoViewHolder>(
             star.text = "Star = ${item.stargazersCount}"
             language.text = "Language: ${item.language}"
             description.text = item.description
+
+            holder.itemView.setOnClickListener {
+                listener.onItemClick(item)
+            }
+
         }
 
     }
@@ -50,3 +55,6 @@ class RepoAdapter()  : ListAdapter<Item, RepoAdapter.RepoViewHolder>(
 }
 
 
+interface IonItemClickListener {
+    fun onItemClick(item:Item)
+}
